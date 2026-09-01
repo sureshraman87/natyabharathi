@@ -39,11 +39,28 @@ git clone <this-repo-url> .
 
 ## 4. Python environment
 
+Use the **full path to the system Python** (`/usr/bin/python3`), not a bare
+`python3`. If Anaconda/Miniconda, pyenv, or any other Python manager is
+installed for your login user, it likely comes first on `PATH`, and
+`python3 -m venv` would silently create a venv whose `bin/python3` symlinks
+into that manager's install (often under `/root` or another user's home
+directory). Since Gunicorn later runs as `www-data`, it won't be able to
+traverse into that directory and every invocation fails with
+`Permission denied` / `status=203/EXEC` — see the troubleshooting entry
+below.
+
 ```bash
 cd /var/www/natyabharathi
-python3 -m venv .venv
+/usr/bin/python3 -m venv .venv
 .venv/bin/pip install --upgrade pip
 .venv/bin/pip install -r requirements.txt
+```
+
+Sanity check before moving on — this should point at `/usr/bin/python3...`,
+never `/root/anaconda3/...` or similar:
+
+```bash
+ls -la .venv/bin/python3
 ```
 
 ## 5. Configure environment variables
@@ -177,7 +194,7 @@ The only state that matters is the database and any uploaded media:
 | Symptom | Likely cause |
 |---|---|
 | 502 Bad Gateway | Gunicorn isn't running — check `sudo systemctl status natyabharathi` and `sudo journalctl -u natyabharathi -e`. |
-| `status=203/EXEC` / `Failed to execute .../gunicorn: Permission denied` | The `www-data` user can't traverse into or execute something under `/var/www/natyabharathi/.venv` (usually because the venv was created by your login user with a restrictive umask). Run `namei -l /var/www/natyabharathi/.venv/bin/gunicorn` to find the exact directory missing an `x` bit, then re-run the `chgrp`/`chmod g+rX`/`chmod g+s` commands in step 7. If `findmnt -T /var/www/natyabharathi -o OPTIONS` shows `noexec`, the fix is to move the project off that mount instead. |
+| `status=203/EXEC` / `Failed to execute .../gunicorn: Permission denied` | Run `namei -l /var/www/natyabharathi/.venv/bin/gunicorn` first. If every line shows `www-data` with an `x`/`s` bit, the project's own permissions are fine — the real cause is almost always that `.venv/bin/python3` is a symlink into a Python manager (Anaconda/Miniconda/pyenv) installed under `/root` or another user's home directory (`ls -la .venv/bin/python3` to check). Since `/root` is `700`, `www-data` can never traverse into it, no matter what you `chmod` under `/var/www`. Fix: delete `.venv` and recreate it with the explicit system interpreter — `/usr/bin/python3 -m venv .venv` — per step 4, then re-run the `chgrp`/`chmod g+rX`/`chmod g+s` commands in step 7. Only if `namei -l` itself shows a missing `x` bit under `/var/www/natyabharathi` is it the group-permission issue those commands fix. If `findmnt -T /var/www/natyabharathi -o OPTIONS` shows `noexec`, move the project off that mount instead. |
 | `DisallowedHost` error | The domain isn't in `DJANGO_ALLOWED_HOSTS` in `.env`. |
 | CSS/images missing (plain HTML) | `collectstatic` wasn't run, or Nginx's `/static/` alias path doesn't match `STATIC_ROOT`. |
 | Admin login redirects/fails oddly | `DJANGO_CSRF_TRUSTED_ORIGINS` doesn't include the `https://` origin you're visiting. |
