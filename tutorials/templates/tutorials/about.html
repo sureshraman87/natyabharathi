@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}About — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:760px;">
+    <h1 class="section-title">About {{ SITE_NAME }}</h1>
+    <p>
+      {{ SITE_NAME }} is a free video tutorial site for learning Bharatanatyam,
+      the classical dance form of Tamil Nadu, India. Lessons are organised into
+      courses that progress from foundational adavus (basic steps) and hasta
+      mudras (hand gestures) through full margam repertoire pieces and abhinaya
+      (expressive storytelling).
+    </p>
+    <h2 class="section-title">How courses are organised</h2>
+    <ul>
+      <li><strong>Category</strong> — a broad topic area, e.g. Foundations, Repertoire, Abhinaya.</li>
+      <li><strong>Course</strong> — a themed series of lessons, e.g. "Adavus for Absolute Beginners".</li>
+      <li><strong>Lesson</strong> — a single video with a title, duration and description.</li>
+    </ul>
+    <p>
+      Instructors manage all content through the
+      <a href="/admin/">Django admin</a>. See the project's
+      <code>README.md</code> for instructions on adding new courses and lessons.
+    </p>
+  </div>
+</section>
+{% endblock %}

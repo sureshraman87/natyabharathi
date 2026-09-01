@@ -1,0 +1,20 @@
+{% load tutorial_extras %}
+<a class="course-card" href="{{ course.get_absolute_url }}" style="color:inherit;">
+  <div class="course-card-thumb">
+    {% if course.thumbnail %}
+      <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+    {% else %}
+      <span>&#9835;</span>
+    {% endif %}
+  </div>
+  <div class="course-card-body">
+    <span class="badge">{{ course.get_level_display }}</span>
+    <h3>{{ course.title }}</h3>
+    <p class="course-meta">{{ course.summary }}</p>
+    <p class="course-meta">
+      {{ course.lesson_count }} lesson{{ course.lesson_count|pluralize }}
+      &middot; {{ course.total_duration_minutes|duration_display }}
+      {% if course.instructor %} &middot; {{ course.instructor }}{% endif %}
+    </p>
+  </div>
+</a>

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load tutorial_extras %}
+
+{% block title %}{{ course.title }} — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{{ course.summary }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="course-header">
+      <div class="course-card-thumb" style="width:260px;border-radius:10px;">
+        {% if course.thumbnail %}
+          <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+        {% else %}
+          <span>&#9835;</span>
+        {% endif %}
+      </div>
+      <div>
+        <span class="badge">{{ course.get_level_display }}</span>
+        <h1>{{ course.title }}</h1>
+        <p class="course-meta">
+          {% if course.category %}{{ course.category.name }} &middot; {% endif %}
+          {{ course.lesson_count }} lesson{{ course.lesson_count|pluralize }}
+          &middot; {{ course.total_duration_minutes|duration_display }}
+          {% if course.instructor %} &middot; Taught by {{ course.instructor }}{% endif %}
+        </p>
+        <p>{{ course.description|default:course.summary|linebreaksbr }}</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">Lessons</h2>
+    {% if lessons %}
+      <ul class="lesson-list">
+        {% for lesson in lessons %}
+          <li>
+            <a class="lesson-row" href="{{ lesson.get_absolute_url }}">
+              <span><span class="lesson-index">{{ forloop.counter }}.</span>{{ lesson.title }}</span>
+              <span class="course-meta">
+                {% if lesson.is_free_preview %}<span class="badge">Free preview</span>{% endif %}
+                {{ lesson.duration_minutes|duration_display }}
+              </span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <p>No lessons added to this course yet. Add some in the Django admin.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

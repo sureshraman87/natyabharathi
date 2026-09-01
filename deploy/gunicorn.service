@@ -1,0 +1,18 @@
+[Unit]
+Description=Gunicorn daemon for Natya Bharathi (natyabharathi.sureshraman.com)
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/natyabharathi
+EnvironmentFile=/var/www/natyabharathi/.env
+ExecStart=/var/www/natyabharathi/.venv/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/run/natyabharathi/gunicorn.sock \
+    natyabharathi_site.wsgi:application
+RuntimeDirectory=natyabharathi
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

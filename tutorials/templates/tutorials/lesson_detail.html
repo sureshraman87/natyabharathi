@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load tutorial_extras %}
+
+{% block title %}{{ lesson.title }} — {{ course.title }} — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{{ lesson.description|truncatewords:25 }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <p class="course-meta">
+      <a href="{{ course.get_absolute_url }}">&larr; Back to {{ course.title }}</a>
+    </p>
+    <h1>{{ lesson.title }}</h1>
+    <p class="course-meta">{{ lesson.duration_minutes|duration_display }}</p>
+
+    <div class="video-wrapper">
+      {% if lesson.video_url %}
+        <iframe
+          src="{{ lesson.video_url|embed_url }}"
+          title="{{ lesson.title }}"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      {% elif lesson.video_file %}
+        <video controls src="{{ lesson.video_file.url }}"></video>
+      {% else %}
+        <p style="color:#fff;padding:40px;text-align:center;">
+          No video has been added for this lesson yet.
+        </p>
+      {% endif %}
+    </div>
+
+    <p>{{ lesson.description|linebreaksbr }}</p>
+
+    <div class="lesson-nav">
+      {% if lesson.previous_lesson %}
+        <a class="btn btn-outline" href="{{ lesson.previous_lesson.get_absolute_url }}">&larr; {{ lesson.previous_lesson.title }}</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      {% if lesson.next_lesson %}
+        <a class="btn" href="{{ lesson.next_lesson.get_absolute_url }}">{{ lesson.next_lesson.title }} &rarr;</a>
+      {% endif %}
+    </div>
+
+    <h2 class="section-title">All lessons in this course</h2>
+    <ul class="lesson-list">
+      {% for l in lessons %}
+        <li>
+          <a class="lesson-row {% if l.id == lesson.id %}active{% endif %}" href="{{ l.get_absolute_url }}">
+            <span><span class="lesson-index">{{ forloop.counter }}.</span>{{ l.title }}</span>
+            <span class="course-meta">{{ l.duration_minutes|duration_display }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}

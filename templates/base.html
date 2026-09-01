@@ -1,0 +1,37 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ SITE_NAME }} — {{ SITE_TAGLINE }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ SITE_TAGLINE }}. Free Bharatanatyam video tutorials covering adavus, hasta mudras, margam repertoire and abhinaya.{% endblock %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="{% url 'home' %}">
+        <span class="brand-name">{{ SITE_NAME }}</span>
+        <span class="brand-tagline">{{ SITE_TAGLINE }}</span>
+      </a>
+      <nav class="main-nav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'course_list' %}">All Courses</a>
+        <a href="{% url 'about' %}">About</a>
+        <a href="/admin/">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; {% now "Y" %} {{ SITE_NAME }}. Built for teaching Bharatanatyam online.</p>
+      <p><a href="https://{{ SITE_DOMAIN }}">{{ SITE_DOMAIN }}</a></p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <h1>{{ SITE_TAGLINE }}</h1>
+    <p>
+      Structured video lessons covering adavus, hasta mudras, margam repertoire and
+      abhinaya — taught step by step, at your own pace.
+    </p>
+    <a class="btn" href="{% url 'course_list' %}">Browse all courses</a>
+    <a class="btn btn-outline" href="{% url 'about' %}">How this site works</a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Browse by category</h2>
+    <div class="category-list">
+      {% for category in categories %}
+        <a class="category-chip" href="{% url 'category_detail' category.slug %}">{{ category.name }}</a>
+      {% empty %}
+        <p>No categories yet — add some in the Django admin.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Featured courses</h2>
+    {% if featured_courses %}
+      <div class="course-grid">
+        {% for course in featured_courses %}
+          {% include "tutorials/_course_card.html" with course=course %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>No courses published yet.</p>
+        <p>Log in to <a href="/admin/">/admin/</a> and add a Category, Course and Lesson to get started.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

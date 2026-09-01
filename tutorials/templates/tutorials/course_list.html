@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}All Courses — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="section-title">
+      {% if active_category %}{{ active_category.name }}{% else %}All courses{% endif %}
+    </h1>
+
+    <div class="category-list">
+      <a class="category-chip {% if not active_category %}active{% endif %}" href="{% url 'course_list' %}">All</a>
+      {% for category in categories %}
+        <a class="category-chip {% if active_category.slug == category.slug %}active{% endif %}"
+           href="{% url 'category_detail' category.slug %}">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+
+    <form class="filter-bar" method="get">
+      <input type="text" name="q" placeholder="Search courses…" value="{{ query }}">
+      <select name="level" onchange="this.form.submit()">
+        <option value="">All levels</option>
+        <option value="beginner" {% if active_level == "beginner" %}selected{% endif %}>Beginner</option>
+        <option value="intermediate" {% if active_level == "intermediate" %}selected{% endif %}>Intermediate</option>
+        <option value="advanced" {% if active_level == "advanced" %}selected{% endif %}>Advanced</option>
+      </select>
+      <button class="btn" type="submit">Filter</button>
+    </form>
+
+    {% if courses %}
+      <div class="course-grid">
+        {% for course in courses %}
+          {% include "tutorials/_course_card.html" with course=course %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>No courses match your filters yet.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
