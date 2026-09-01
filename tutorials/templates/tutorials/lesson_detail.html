@@ -19,6 +19,7 @@
           src="{{ lesson.video_url|embed_url }}"
           title="{{ lesson.title }}"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen>
         </iframe>
       {% elif lesson.video_file %}

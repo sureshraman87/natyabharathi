@@ -134,6 +134,12 @@ SECURE_HSTS_SECONDS = env.int("DJANGO_SECURE_HSTS_SECONDS", default=0 if DEBUG e
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
 
+# Django's default ("same-origin") strips the referrer entirely on requests
+# to embedded YouTube/Vimeo players, which those players can reject as an
+# embedding-validation failure (surfaces as a player "configuration error").
+# This still only ever sends our own origin, never the full URL, to other sites.
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 # Site metadata used in templates (see tutorials/context_processors.py)
 
 SITE_NAME = env("SITE_NAME", default="Natya Bharathi")
