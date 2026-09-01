@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Sign up — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container auth-container">
+    <h1 class="section-title">Create an account</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn" type="submit">Sign up</button>
+    </form>
+    <p class="course-meta">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+  </div>
+</section>
+{% endblock %}

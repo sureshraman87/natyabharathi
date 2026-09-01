@@ -95,6 +95,30 @@ img {
   color: var(--gold-light);
 }
 
+.nav-user {
+  color: var(--gold-light);
+  font-size: 0.9rem;
+}
+
+.logout-form {
+  margin: 0;
+  display: inline;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #fff;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--gold-light);
+}
+
 /* Hero */
 
 .hero {
@@ -355,6 +379,73 @@ img {
   text-align: center;
   padding: 60px 20px;
   color: var(--muted);
+}
+
+/* Auth forms */
+
+.auth-container {
+  max-width: 420px;
+}
+
+.auth-container form p {
+  margin-bottom: 16px;
+}
+
+.auth-container form label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--maroon-dark);
+}
+
+.auth-container form input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.auth-container .helptext {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.auth-container ul.errorlist {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0;
+  color: #b00020;
+  font-size: 0.85rem;
+}
+
+.form-error {
+  color: #b00020;
+  margin-bottom: 16px;
+}
+
+/* Flash messages */
+
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  margin: 20px 0 0;
+  font-size: 0.95rem;
+}
+
+.alert-success {
+  background: #e6f4ea;
+  color: #1e6b34;
+  border: 1px solid #b6dfc1;
+}
+
+.alert-error,
+.alert-danger {
+  background: #fbe7e7;
+  color: #a3231f;
+  border: 1px solid #f1bcbc;
 }
 
 @media (max-width: 640px) {

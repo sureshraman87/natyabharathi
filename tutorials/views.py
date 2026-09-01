@@ -1,6 +1,9 @@
+from django.contrib import messages
+from django.contrib.auth import login
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import SignUpForm
 from .models import Category, Course, Lesson
 
 
@@ -81,3 +84,20 @@ def lesson_detail(request, course_slug, lesson_slug):
 
 def about(request):
     return render(request, "tutorials/about.html")
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect("home")
+
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Welcome to Natya Bharathi! Your account is ready.")
+            return redirect("home")
+    else:
+        form = SignUpForm()
+
+    return render(request, "tutorials/register.html", {"form": form})

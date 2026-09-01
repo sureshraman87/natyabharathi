@@ -105,6 +105,33 @@ them with real content via `/admin/`:
 .venv/bin/python manage.py seed_demo_content
 ```
 
+`migrate` created `db.sqlite3` as your login user, but Gunicorn will run
+as `www-data` (step 7) and needs to **write** to both the file and the
+directory it lives in (SQLite creates a temporary journal file alongside
+the database on every write — including things as simple as an admin
+login updating `last_login`). Grant that now, or you'll hit
+`OperationalError: attempt to write a readonly database` the first time
+anyone logs in or registers:
+
+```bash
+sudo chgrp www-data /var/www/natyabharathi/db.sqlite3
+sudo chmod 664 /var/www/natyabharathi/db.sqlite3
+sudo chmod g+w /var/www/natyabharathi
+```
+
+Do the same for `media/` ahead of time, so the first thumbnail/video
+upload through `/admin/` doesn't hit the same error:
+
+```bash
+sudo mkdir -p /var/www/natyabharathi/media
+sudo chgrp -R www-data /var/www/natyabharathi/media
+sudo chmod -R g+rwX /var/www/natyabharathi/media
+sudo find /var/www/natyabharathi/media -type d -exec chmod g+s {} \;
+```
+
+(If you switched to Postgres via `DATABASE_URL`, skip both of these —
+Postgres handles its own permissions.)
+
 ## 7. Gunicorn as a systemd service
 
 The unit file runs Gunicorn as `www-data`, but everything up to now (the
@@ -195,6 +222,7 @@ The only state that matters is the database and any uploaded media:
 |---|---|
 | 502 Bad Gateway | Gunicorn isn't running — check `sudo systemctl status natyabharathi` and `sudo journalctl -u natyabharathi -e`. |
 | `status=203/EXEC` / `Failed to execute .../gunicorn: Permission denied` | Run `namei -l /var/www/natyabharathi/.venv/bin/gunicorn` first. If every line shows `www-data` with an `x`/`s` bit, the project's own permissions are fine — the real cause is almost always that `.venv/bin/python3` is a symlink into a Python manager (Anaconda/Miniconda/pyenv) installed under `/root` or another user's home directory (`ls -la .venv/bin/python3` to check). Since `/root` is `700`, `www-data` can never traverse into it, no matter what you `chmod` under `/var/www`. Fix: delete `.venv` and recreate it with the explicit system interpreter — `/usr/bin/python3 -m venv .venv` — per step 4, then re-run the `chgrp`/`chmod g+rX`/`chmod g+s` commands in step 7. Only if `namei -l` itself shows a missing `x` bit under `/var/www/natyabharathi` is it the group-permission issue those commands fix. If `findmnt -T /var/www/natyabharathi -o OPTIONS` shows `noexec`, move the project off that mount instead. |
+| `OperationalError: attempt to write a readonly database` | `www-data` (who Gunicorn runs as) can read `db.sqlite3` but can't write to it or to the directory it lives in (SQLite needs directory write access to create a journal file). Run the `chgrp`/`chmod g+w` commands in step 6, then `sudo systemctl restart natyabharathi`. Same fix, pointed at `media/`, if it happens on an admin file upload instead. |
 | `DisallowedHost` error | The domain isn't in `DJANGO_ALLOWED_HOSTS` in `.env`. |
 | CSS/images missing (plain HTML) | `collectstatic` wasn't run, or Nginx's `/static/` alias path doesn't match `STATIC_ROOT`. |
 | Admin login redirects/fails oddly | `DJANGO_CSRF_TRUSTED_ORIGINS` doesn't include the `https://` origin you're visiting. |

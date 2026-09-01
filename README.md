@@ -19,6 +19,10 @@ Built to be deployed at **https://natyabharathi.sureshraman.com** — see
   lesson navigation.
 - **Content management via Django admin** — no code changes needed to add
   courses or lessons; instructors log in at `/admin/`.
+- **Student accounts** — visitors can sign up at `/accounts/register/` and
+  log in/out at `/accounts/login/` (registration logs them in immediately).
+  Accounts aren't required to watch lessons yet; it's a base to build
+  progress-tracking or paid/members-only content on top of later.
 - **SEO basics** — per-page titles/descriptions and an auto-generated
   `/sitemap.xml`.
 - **Production-ready out of the box** — WhiteNoise for static files,

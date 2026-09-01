@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Log in — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container auth-container">
+    <h1 class="section-title">Log in</h1>
+    {% if form.errors %}
+      <p class="form-error">Your username and password didn't match. Please try again.</p>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn" type="submit">Log in</button>
+    </form>
+    <p class="course-meta">Don't have an account? <a href="{% url 'register' %}">Sign up</a></p>
+  </div>
+</section>
+{% endblock %}

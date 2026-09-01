@@ -140,6 +140,7 @@ SITE_NAME = env("SITE_NAME", default="Natya Bharathi")
 SITE_TAGLINE = env("SITE_TAGLINE", default="Learn Bharatanatyam, one adavu at a time")
 SITE_DOMAIN = env("SITE_DOMAIN", default="natyabharathi.sureshraman.com")
 
+LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 
