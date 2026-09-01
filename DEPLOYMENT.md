@@ -90,6 +90,23 @@ them with real content via `/admin/`:
 
 ## 7. Gunicorn as a systemd service
 
+The unit file runs Gunicorn as `www-data`, but everything up to now (the
+`git clone`, the venv, `pip install`) was done as your own login user. Give
+the `www-data` group read/execute access to the project — including the
+venv's `bin/` executables — before starting the service, otherwise you'll
+hit `status=203/EXEC ... Permission denied`:
+
+```bash
+sudo chgrp -R www-data /var/www/natyabharathi
+sudo chmod -R g+rX /var/www/natyabharathi
+sudo find /var/www/natyabharathi -type d -exec chmod g+s {} \;
+```
+
+The last command sets the setgid bit on every directory so that files
+created by future `git pull` / `pip install` runs (from `deploy.sh`) keep
+inheriting the `www-data` group automatically — you shouldn't need to
+repeat this after every deploy.
+
 Copy the provided unit file and adjust the paths only if you didn't use
 `/var/www/natyabharathi`:
 
@@ -160,6 +177,7 @@ The only state that matters is the database and any uploaded media:
 | Symptom | Likely cause |
 |---|---|
 | 502 Bad Gateway | Gunicorn isn't running — check `sudo systemctl status natyabharathi` and `sudo journalctl -u natyabharathi -e`. |
+| `status=203/EXEC` / `Failed to execute .../gunicorn: Permission denied` | The `www-data` user can't traverse into or execute something under `/var/www/natyabharathi/.venv` (usually because the venv was created by your login user with a restrictive umask). Run `namei -l /var/www/natyabharathi/.venv/bin/gunicorn` to find the exact directory missing an `x` bit, then re-run the `chgrp`/`chmod g+rX`/`chmod g+s` commands in step 7. If `findmnt -T /var/www/natyabharathi -o OPTIONS` shows `noexec`, the fix is to move the project off that mount instead. |
 | `DisallowedHost` error | The domain isn't in `DJANGO_ALLOWED_HOSTS` in `.env`. |
 | CSS/images missing (plain HTML) | `collectstatic` wasn't run, or Nginx's `/static/` alias path doesn't match `STATIC_ROOT`. |
 | Admin login redirects/fails oddly | `DJANGO_CSRF_TRUSTED_ORIGINS` doesn't include the `https://` origin you're visiting. |
